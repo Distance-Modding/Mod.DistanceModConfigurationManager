@@ -20,7 +20,7 @@ namespace DistanceModConfigurationManager
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.0.0";
+        public const string modVersion = "1.0.1";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
@@ -176,7 +176,7 @@ namespace DistanceModConfigurationManager
                 {
                     return new FloatSlider(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
                         .WithDefaultValue((float)setting.DefaultValue)
-                        .LimitedByRange(-180, 180)
+                        .LimitedByRange((float)setting.DefaultValue - 180, (float)setting.DefaultValue + 180)
                         .WithGetter(() => (float)setting.Get())
                         .WithSetter((x) => setting.Set(x))
                         .WithDescription($"{setting.Description}");
@@ -198,7 +198,7 @@ namespace DistanceModConfigurationManager
                 {
                     return new IntegerSlider(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
                     .WithDefaultValue((int)setting.DefaultValue)
-                    .LimitedByRange(0, 60)
+                    .LimitedByRange((int)setting.DefaultValue, (int)setting.DefaultValue + 60)
                     .WithGetter(() => (int)setting.Get())
                     .WithSetter((x) => setting.Set(x))
                     .WithDescription($"{setting.Description}");
@@ -225,7 +225,9 @@ namespace DistanceModConfigurationManager
                     .WithDescription($"{setting.Description}");
             }
 
-            return new ActionButton(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
+            Logger.LogInfo($"Could not properly display {setting.DispName} in the menu");
+            //This doesn't even display lmao
+            return new EmptyElement(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
                 .WithDescription("This setting is not properly displayed! Report this problem to the #modding channel on the Distance discord!");
         }
     }
