@@ -20,7 +20,7 @@ namespace DistanceModConfigurationManager
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.0.1";
+        public const string modVersion = "1.1.0";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
@@ -212,6 +212,15 @@ namespace DistanceModConfigurationManager
                         .WithSetter((x) => setting.Set(x))
                         .WithDescription($"{setting.Description}");
                 }
+            }
+
+            if (typeof(string) == setting.SettingType)
+            {
+                return new InputPrompt(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
+                    .WithDefaultValue((string)setting.DefaultValue)
+                    .WithTitle(setting.DispName)
+                    .WithSubmitAction((x) => setting.Set(x))
+                    .WithDescription($"{setting.Description}");
             }
 
             if (setting.SettingType.IsEnum)
