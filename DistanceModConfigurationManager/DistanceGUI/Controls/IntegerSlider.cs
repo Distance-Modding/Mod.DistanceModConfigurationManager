@@ -28,6 +28,11 @@ namespace DistanceModConfigurationManager.DistanceGUI.Controls
         }
         public IntegerSlider WithDefaultValue(int defaultValue)
         {
+            if (defaultValue > Maximum || defaultValue < Minimum)
+            {
+                throw new ArgumentOutOfRangeException($"Default value ({defaultValue}) must be between minimum ({Minimum}) and maximum ({Maximum}) values.");
+            }
+
             DefaultValue = defaultValue;
             return this;
         }

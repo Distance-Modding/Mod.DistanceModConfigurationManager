@@ -20,7 +20,7 @@ namespace DistanceModConfigurationManager.DistanceGUI.Controls
         {
             if (defaultValue > Maximum || defaultValue < Minimum)
             {
-                throw new ArgumentOutOfRangeException("Default value must be between minimum and maximum values.");
+                throw new ArgumentOutOfRangeException($"Default value ({defaultValue}) must be between minimum ({Minimum}) and maximum ({Maximum}) values.");
             }
 
             DefaultValue = defaultValue;

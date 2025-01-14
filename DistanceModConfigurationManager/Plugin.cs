@@ -20,7 +20,7 @@ namespace DistanceModConfigurationManager
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.1.0";
+        public const string modVersion = "1.1.1";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
@@ -175,8 +175,8 @@ namespace DistanceModConfigurationManager
                 if (setting.AcceptableValueRange.Key == null)
                 {
                     return new FloatSlider(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
-                        .WithDefaultValue((float)setting.DefaultValue)
                         .LimitedByRange((float)setting.DefaultValue - 180, (float)setting.DefaultValue + 180)
+                        .WithDefaultValue((float)setting.DefaultValue)
                         .WithGetter(() => (float)setting.Get())
                         .WithSetter((x) => setting.Set(x))
                         .WithDescription($"{setting.Description}");
@@ -184,8 +184,8 @@ namespace DistanceModConfigurationManager
                 else
                 {
                     return new FloatSlider(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
-                        .WithDefaultValue((float)setting.DefaultValue)
                         .LimitedByRange((float)setting.AcceptableValueRange.Key, (float)setting.AcceptableValueRange.Value)
+                        .WithDefaultValue((float)setting.DefaultValue)
                         .WithGetter(() => (float)setting.Get())
                         .WithSetter((x) => setting.Set(x))
                         .WithDescription($"{setting.Description}");
@@ -197,8 +197,8 @@ namespace DistanceModConfigurationManager
                 if (setting.AcceptableValueRange.Key == null)
                 {
                     return new IntegerSlider(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
-                    .WithDefaultValue((int)setting.DefaultValue)
                     .LimitedByRange((int)setting.DefaultValue, (int)setting.DefaultValue + 60)
+                    .WithDefaultValue((int)setting.DefaultValue)
                     .WithGetter(() => (int)setting.Get())
                     .WithSetter((x) => setting.Set(x))
                     .WithDescription($"{setting.Description}");
@@ -206,8 +206,8 @@ namespace DistanceModConfigurationManager
                 else
                 {
                     return new IntegerSlider(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
-                        .WithDefaultValue((int)setting.DefaultValue)
                         .LimitedByRange((int)setting.AcceptableValueRange.Key, (int)setting.AcceptableValueRange.Value)
+                        .WithDefaultValue((int)setting.DefaultValue)
                         .WithGetter(() => (int)setting.Get())
                         .WithSetter((x) => setting.Set(x))
                         .WithDescription($"{setting.Description}");
