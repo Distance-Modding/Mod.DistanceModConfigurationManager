@@ -20,7 +20,7 @@ namespace DistanceModConfigurationManager
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.1.1";
+        public const string modVersion = "1.2.0";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
@@ -149,10 +149,10 @@ namespace DistanceModConfigurationManager
                 foreach(var setting in plugin.Settings)
                 {
                     //For now, just skipping keyboard shortcuts entirely
-                    if (typeof(KeyboardShortcut) != setting.SettingType)
-                    {
+                    //if (typeof(KeyboardShortcut) != setting.SettingType)
+                    //{
                         settingsMenu.Add(CreateUIForSetting(setting));
-                    }
+                    //}
                 }
 
                 Menus.AddNew(MenuDisplayMode.Both, settingsMenu, plugin.Info.Name.ToUpper(), $"Settings for the {plugin.Info.Name} mod");
@@ -231,6 +231,15 @@ namespace DistanceModConfigurationManager
                     .WithEntries(settingDict)
                     .WithGetter(() => (int)setting.Get())
                     .WithSetter((x) => setting.Set(x))
+                    .WithDescription($"{setting.Description}");
+            }
+
+            if (typeof(KeyboardShortcut) == setting.SettingType)
+            {
+                return new InputPrompt(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
+                    .WithDefaultValue(setting.DefaultValue.ToString())
+                    .WithTitle(setting.DispName)
+                    .WithSubmitAction((x) => setting.Set(KeyboardShortcut.Deserialize(x)))
                     .WithDescription($"{setting.Description}");
             }
 

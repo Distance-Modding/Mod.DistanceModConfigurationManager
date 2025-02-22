@@ -7,6 +7,8 @@ namespace DistanceModConfigurationManager.DistanceGUI.Controls
     public class InputPrompt : MenuItemBase
     {
         public string Title { get; set; }
+        public string CurrentValue { get; set; }
+
         public Func<string> DefaultValue { get; set; }
         public Func<string, string> Validator { get; set; }
         public Action<string> SubmitAction { get; set; }
@@ -15,6 +17,11 @@ namespace DistanceModConfigurationManager.DistanceGUI.Controls
         public InputPrompt WithTitle(string title)
         {
             Title = title ?? string.Empty;
+            return this;
+        }
+        public InputPrompt WithCurrentValue(string currentValue)
+        {
+            CurrentValue = currentValue ?? string.Empty;
             return this;
         }
         public InputPrompt WithDefaultValue(string defaultValue)
@@ -49,6 +56,7 @@ namespace DistanceModConfigurationManager.DistanceGUI.Controls
             if (error == null)
             {
                 SubmitAction?.Invoke(input);
+                CurrentValue = input;
                 return true;
             }
 
@@ -64,7 +72,7 @@ namespace DistanceModConfigurationManager.DistanceGUI.Controls
                 new InputPromptPanel.OnSubmit(OnSubmit),
                 new InputPromptPanel.OnPop(OnCancel),
                 Title,
-                DefaultValue()
+                CurrentValue == string.Empty ? DefaultValue() : CurrentValue
             );
         }
         public override void Tweak(ModdingMenu menu)
