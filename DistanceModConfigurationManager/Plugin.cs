@@ -9,6 +9,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace DistanceModConfigurationManager
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.2.0";
+        public const string modVersion = "1.3.0";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
@@ -33,7 +34,7 @@ namespace DistanceModConfigurationManager
 
         //Private Variables
 
-        private string _modsWithoutSettings;
+        private List<string> _modsWithoutSettings;
 
         private List<SettingEntryBase> _allSettings;
         private List<PluginSettingsData> _filteredSettings = new List<PluginSettingsData>();
@@ -52,8 +53,6 @@ namespace DistanceModConfigurationManager
 
             Log = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             Logger.LogInfo("Thanks for using the Distance Mod Configuration Manager!");
-
-            CreateSettingsMenu();
 
             //Config Setup
             ShowVersionInfo = Config.Bind("General",
@@ -74,14 +73,16 @@ namespace DistanceModConfigurationManager
             if (settingChangedEventArgs == null) return;
         }
 
-        private void CreateSettingsMenu()
+        /*private void CreateSettingsMenu()
         {
+            //Originally how the GSL displayed the settings for showing version info.
+
             MenuTree settingsMenu = new MenuTree("menu.distance.modding.settings", "Mod Settings");
 
             //settingsMenu.CheckBox(MenuDisplayMode.Both, "setting:show_version_info", modVersion, () => ShowVersionInfo.Value, (value) => ShowVersionInfo.Value = value, "Display the Config Manager Version in the main menu");
 
             //MenuSystem.MenuTree.SubmenuButton(MenuDisplayMode.Both, "navigate:menu.distance.modding.settings", "MOD CONFIGURATION MANAGER SETTINGS", settingsMenu, "Settings related to installed mods");
-        }
+        }*/
 
         private static bool IsKeyboardShortcut(SettingEntryBase x)
         {
@@ -95,7 +96,8 @@ namespace DistanceModConfigurationManager
         {
             SettingSearcher.CollectSettings(out var results, out var modsWithoutSettings);
 
-            _modsWithoutSettings = string.Join(", ", modsWithoutSettings.Select(x => x.TrimStart('!')).OrderBy(x => x).ToArray());
+            //_modsWithoutSettings = string.Join(", ", modsWithoutSettings.Select(x => x.TrimStart('!')).OrderBy(x => x).ToArray());
+            _modsWithoutSettings = modsWithoutSettings;
             _allSettings = results.ToList();
             Log.LogInfo("Settings found: " + results.Count());
             foreach(var jeff in results)
@@ -135,28 +137,67 @@ namespace DistanceModConfigurationManager
             }
 
             _filteredSettings = filteredSettings;
-            modsLoaded = _filteredSettings.Count;
+            modsLoaded = filteredSettings.Count + _modsWithoutSettings.Count - 1;
 
             AddFilteredSettingsToMenu();
         }
 
         private void AddFilteredSettingsToMenu()
         {
-            foreach(var plugin in _filteredSettings)
+            foreach (PluginSettingsData plugin in _filteredSettings)
             {
+
                 MenuTree settingsMenu = new MenuTree($"menu.distance.mod.{Regex.Replace(plugin.Info.Name, @"\s+", "").ToLower()}", $"{plugin.Info.Name.ToUpper()} SETTINGS");
 
-                foreach(var setting in plugin.Settings)
+                List<string> _categories = new List<string>();
+
+                foreach (SettingEntryBase setting in plugin.Settings)
                 {
-                    //For now, just skipping keyboard shortcuts entirely
-                    //if (typeof(KeyboardShortcut) != setting.SettingType)
-                    //{
+                    if (_categories.Any())
+                    {
+                        if (_categories.Last() != setting.Category)
+                        {
+                            _categories.Add(setting.Category);
+                        }
+                    }
+                    else
+                    {
+                        _categories.Add(setting.Category);
+                    }
+                }
+
+                if (_categories.Count >= 2)
+                {
+                    //An attempt to make submenus for categories of a plugin's settings. IT DISPLAYS BAD! IDK WHY! D:
+                    foreach (string category in _categories)
+                    {
+                        MenuTree menuTree = new MenuTree($"submenu.distance.mod.{Regex.Replace(plugin.Info.Name, @"\s+", "").ToLower()}", category.ToUpper());
+
+                        foreach (SettingEntryBase setting in plugin.Settings)
+                        {
+                            if (menuTree.Title == setting.Category.ToUpper())
+                            {
+                                menuTree.Add(CreateUIForSetting(setting));
+                            }
+                        }
+
+                        SubMenu subMenu = settingsMenu.SubmenuButton(
+                            MenuDisplayMode.Both,
+                            $"submenu:{category.ToLower()}",
+                            category.ToUpper(),
+                            menuTree,
+                            $"{Regex.Replace(plugin.Info.Name, @"\s+", "")} settings related to {category}");
+                    }
+                }
+                else
+                {
+                    foreach (SettingEntryBase setting in plugin.Settings)
+                    {
                         settingsMenu.Add(CreateUIForSetting(setting));
-                    //}
+                    }
                 }
 
                 Menus.AddNew(MenuDisplayMode.Both, settingsMenu, plugin.Info.Name.ToUpper(), $"Settings for the {plugin.Info.Name} mod");
-
             }
         }
 
@@ -234,7 +275,24 @@ namespace DistanceModConfigurationManager
                     .WithDescription($"{setting.Description}");
             }
 
-            if (typeof(KeyboardShortcut) == setting.SettingType)
+            /*if (typeof(Dictionary<string, int>) == setting.SettingType)
+            {
+                Dictionary<string, int> settingDict = new Dictionary<string, int>();
+                PropertyInfo[] properties = setting.SettingType.GetProperties();
+
+                foreach(PropertyInfo property in properties)
+                {
+                    object value = property.GetValue(setting.Get());
+                }
+
+                return new ListBox<int>(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
+                    .WithEntries((Dictionary<string, int>)setting.SettingType)
+                    .WithGetter(() => (int)setting.Get())
+                    .WithSetter((x) => setting.Set(x))
+                    .WithDescription($"{setting.Description}");
+            }*/
+
+                        if (typeof(KeyboardShortcut) == setting.SettingType)
             {
                 return new InputPrompt(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
                     .WithDefaultValue(setting.DefaultValue.ToString())

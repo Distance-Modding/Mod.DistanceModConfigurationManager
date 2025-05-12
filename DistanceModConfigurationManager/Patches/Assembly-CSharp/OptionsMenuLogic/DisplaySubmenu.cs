@@ -17,9 +17,9 @@ namespace DistanceModConfigurationManager.Patches
 
             if (subMenu && subMenu is ModdingMenu)
             {
-                ModdingMenu centrifugeMenu = subMenu as ModdingMenu;
+                ModdingMenu moddingMenu = subMenu as ModdingMenu;
 
-                if (!centrifugeMenu.MenuTree.Any())
+                if (!moddingMenu.MenuTree.Any())
                 {
                     MenuSystem.ShowUnavailableMessage();
                     return false;
