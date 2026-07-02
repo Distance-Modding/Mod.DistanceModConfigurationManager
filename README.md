@@ -4,5 +4,5 @@ This mod will allow you to change the settings of other mods from within the Dis
 With this you won't need to close and re-open the game to change most settings of a mod!
 
 <h3>KNOWN ISSUES:</h3>
-- Hotkey configurations do not display in-game. <br>
+- If you open up a mod's settings when a level gets changed in multiplayer you will no longer be able to change settings until you re-open the game. <br>
 - Mods with setting names that are too big will display awkwardly in the menu. <br>

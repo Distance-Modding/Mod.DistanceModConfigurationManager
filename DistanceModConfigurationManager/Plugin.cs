@@ -15,13 +15,20 @@ using UnityEngine;
 
 namespace DistanceModConfigurationManager
 {
+    /*
+     * Added:
+     * Displays current value of keyboard shortcuts in menus
+     * Menu no longer becomes inaccessible if you display the settings of a mod while a level begins to load in multiplayer
+     *
+     */
+
     [BepInPlugin(modGUID, modName, modVersion)]
     public sealed class Mod : BaseUnityPlugin
     {
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.3.0";
+        public const string modVersion = "1.2.1";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
@@ -166,7 +173,8 @@ namespace DistanceModConfigurationManager
                     }
                 }
 
-                if (_categories.Count >= 2)
+                //Setting it to 900 so it literally never does this
+                if (_categories.Count >= 900)
                 {
                     //An attempt to make submenus for categories of a plugin's settings. IT DISPLAYS BAD! IDK WHY! D:
                     foreach (string category in _categories)
@@ -181,12 +189,16 @@ namespace DistanceModConfigurationManager
                             }
                         }
 
-                        SubMenu subMenu = settingsMenu.SubmenuButton(
-                            MenuDisplayMode.Both,
-                            $"submenu:{category.ToLower()}",
-                            category.ToUpper(),
-                            menuTree,
-                            $"{Regex.Replace(plugin.Info.Name, @"\s+", "")} settings related to {category}");
+                        settingsMenu.Add(new SubMenu(MenuDisplayMode.Both, $"submenu:{category.ToLower()}", category.ToUpper())
+                            .NavigatesTo(menuTree)
+                            .WithDescription($"{Regex.Replace(plugin.Info.Name, @"\s+", "")} settings related to {category}"));
+
+                        //SubMenu subMenu = settingsMenu.SubmenuButton(
+                         //   MenuDisplayMode.Both,
+                         //   $"submenu:{category.ToLower()}",
+                          //  category.ToUpper(),
+                          //  menuTree,
+                          //  $"{Regex.Replace(plugin.Info.Name, @"\s+", "")} settings related to {category}");
                     }
                 }
                 else
@@ -292,10 +304,11 @@ namespace DistanceModConfigurationManager
                     .WithDescription($"{setting.Description}");
             }*/
 
-                        if (typeof(KeyboardShortcut) == setting.SettingType)
+            if (typeof(KeyboardShortcut) == setting.SettingType)
             {
                 return new InputPrompt(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
                     .WithDefaultValue(setting.DefaultValue.ToString())
+                    .WithCurrentValue(setting.Get().ToString())
                     .WithTitle(setting.DispName)
                     .WithSubmitAction((x) => setting.Set(KeyboardShortcut.Deserialize(x)))
                     .WithDescription($"{setting.Description}");

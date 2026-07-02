@@ -187,15 +187,10 @@ namespace DistanceModConfigurationManager.DistanceGUI.Menu
 
         public override void Update()
         {
-            bool flag = true;
+            if (PanelObject_ == null) return;
+            if (PanelObject_?.activeInHierarchy is false) return;
 
-            flag &= PanelObject_ != null;
-            flag &= PanelObject_?.activeInHierarchy is true;
-
-            if (flag)
-            {
-                UpdateVirtual();
-            }
+            UpdateVirtual();
         }
 
         public override void UpdateVirtual()
