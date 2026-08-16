@@ -271,6 +271,7 @@ namespace DistanceModConfigurationManager
             {
                 return new InputPrompt(MenuDisplayMode.Both, $"settings:{Regex.Replace(setting.DispName, @"\s+", "_").ToLower()}", setting.DispName.ToUpper())
                     .WithDefaultValue((string)setting.DefaultValue)
+                    .WithCurrentValue(setting.Get().ToString())
                     .WithTitle(setting.DispName)
                     .WithSubmitAction((x) => setting.Set(x))
                     .WithDescription($"{setting.Description}");
