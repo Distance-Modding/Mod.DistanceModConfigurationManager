@@ -28,7 +28,7 @@ namespace DistanceModConfigurationManager
         //Mod Details
         private const string modGUID = "Distance.DistanceModConfigurationManager";
         private const string modName = "Distance Mod Configuration Manager";
-        public const string modVersion = "1.2.1";
+        public const string modVersion = "1.2.2";
 
         //Config Entry Settings
         public static string ShowVersionKey = "Show Version Info";
